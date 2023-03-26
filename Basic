@@ -1,0 +1,36 @@
+import praw
+
+#You will need to log into Reddit API yourself to get a get a client ID and client secret and insert below
+client_id = "Null"
+client_secret = "Null"
+
+
+reddit = praw.Reddit(
+    client_id=client_id,
+    client_secret=client_secret,
+    user_agent="myBot/0.0.1",
+)
+
+def get_comments(subreddit_name, num_comments):
+    subreddit = reddit.subreddit(subreddit_name)
+    submission_list = subreddit.hot(limit=10)
+    comments_list = []
+
+    for submission in submission_list:
+        submission.comments.replace_more(limit=None)
+        for comment in submission.comments.list():
+            if len(comments_list) < num_comments:
+                comments_list.append(comment.body)
+            else:
+                break
+
+    return comments_list
+
+if __name__ == "__main__":
+    #You can enter any non-private subreddit name below
+    subreddit_name = "Enter Subreddit name you want to pull comments from"
+    num_comments = 10
+    comments = get_comments(subreddit_name, num_comments)
+
+    for idx, comment in enumerate(comments):
+        print(f"Comment {idx + 1}: {comment}\n")
